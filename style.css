@@ -333,3 +333,95 @@ button {
     padding: 9px 18px;
   }
 }
+.pace-input-box {
+  width: 90%;
+  max-width: 520px;
+  margin: 20px auto 28px;
+  padding: 18px 22px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 18px;
+}
+
+.pace-input-box label {
+  display: block;
+  font-size: clamp(18px, 2.2vw, 26px);
+  font-weight: bold;
+  margin-bottom: 14px;
+}
+
+.pace-input-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.pace-input-row input {
+  width: 90px;
+  padding: 12px;
+  font-size: 30px;
+  text-align: center;
+  border-radius: 12px;
+  border: none;
+  color: #0B3D2E;
+  font-weight: bold;
+}
+
+.pace-input-row span {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.program-list {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.program-btn {
+  min-width: 260px;
+  line-height: 1.2;
+}
+
+.program-btn span {
+  font-size: 20px;
+  opacity: 0.85;
+}
+
+@media (max-width: 950px) and (max-height: 500px) {
+  .pace-input-box {
+    margin: 8px auto 12px;
+    padding: 10px 14px;
+    max-width: 420px;
+  }
+
+  .pace-input-box label {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .pace-input-row input {
+    width: 64px;
+    padding: 7px;
+    font-size: 18px;
+  }
+
+  .pace-input-row span {
+    font-size: 16px;
+  }
+
+  .program-list {
+    gap: 8px;
+  }
+
+  .program-btn {
+    min-width: 170px;
+    font-size: 15px;
+    padding: 9px 14px;
+  }
+
+  .program-btn span {
+    font-size: 12px;
+  }
+}
