@@ -1,7 +1,7 @@
 const workouts = {
   week1: {
-    title: "WEEK 1: Threshold Interval",
-    buttonTitle: "WEEK 1",
+    title: "SESSION 1: Threshold Interval",
+    buttonTitle: "SESSION 1",
     buttonSubtitle: "Threshold + Plus",
     description: "Threshold Pace와 Threshold Plus를 함께 경험하는 인터벌 훈련입니다.",
     steps: [
@@ -123,8 +123,8 @@ const workouts = {
   },
 
   week2: {
-    title: "WEEK 2: Threshold Volume",
-    buttonTitle: "WEEK 2",
+    title: "SESSION 2: Threshold Volume",
+    buttonTitle: "SESSION2",
     buttonSubtitle: "10 Sets Threshold",
     description: "Threshold Pace 반복 능력과 후반 페이스 유지력을 만드는 훈련입니다.",
     steps: [
