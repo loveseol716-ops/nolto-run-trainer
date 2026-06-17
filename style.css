@@ -480,3 +480,61 @@ button {
     padding: 9px 18px;
   }
 }
+.progress-wrap {
+  width: 90%;
+  max-width: 850px;
+  margin: 10px auto 16px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: clamp(16px, 2vw, 24px);
+  font-weight: bold;
+  margin-bottom: 8px;
+  opacity: 0.9;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#progress-fill {
+  width: 0%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 999px;
+  transition: width 0.3s linear;
+}
+
+/* 구간별 화면 톤 */
+body.warmup {
+  background: #0B3D2E;
+}
+
+body.main {
+  background: #3D0B0B;
+}
+
+body.recovery {
+  background: #0B243D;
+}
+
+body.cooldown {
+  background: #2E2E2E;
+}
+
+body.briefing {
+  background: #0B3D2E;
+}
+
+/* 현재 구간을 더 크게 */
+#section-label {
+  padding: 8px 18px;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+}
