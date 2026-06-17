@@ -1,0 +1,10 @@
+{
+  "name": "NOLTO RUN TRAINER",
+  "short_name": "NOLTO RUN",
+  "start_url": "./index.html",
+  "display": "fullscreen",
+  "background_color": "#0B3D2E",
+  "theme_color": "#0B3D2E",
+  "orientation": "landscape",
+  "icons": []
+}
