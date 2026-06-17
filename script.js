@@ -11,7 +11,7 @@ const finishScreen = document.getElementById("finish-screen");
 
 const paceMinInput = document.getElementById("pace-min");
 const paceSecInput = document.getElementById("pace-sec");
-const programButtons = document.querySelectorAll(".program-btn");
+const programList = document.getElementById("program-list");
 
 const pauseBtn = document.getElementById("pause-btn");
 const nextBtn = document.getElementById("next-btn");
