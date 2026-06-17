@@ -17,13 +17,30 @@
   <div class="app">
     <div id="start-screen" class="screen active">
       <p class="brand">NOLTO RUN TRAINER</p>
-      <h1>WEEK 1</h1>
-      <p class="subtitle">Threshold Interval</p>
-      <p class="description">
-        오늘의 목표는 빠르게 달리는 것이 아니라,<br />
-        반복 가능한 Threshold Pace를 찾는 것입니다.
-      </p>
-      <button id="start-btn">START</button>
+      <h1>PROGRAM SELECT</h1>
+      <p class="subtitle">30분 TT 평균 페이스를 입력하세요</p>
+
+      <div class="pace-input-box">
+        <label>30분 TT 평균 페이스</label>
+        <div class="pace-input-row">
+          <input id="pace-min" type="number" placeholder="분" value="5" />
+          <span>:</span>
+          <input id="pace-sec" type="number" placeholder="초" value="30" />
+          <span>/km</span>
+        </div>
+      </div>
+
+      <div class="program-list">
+        <button class="program-btn" data-program="week1">
+          WEEK 1<br />
+          <span>Threshold Interval</span>
+        </button>
+
+        <button class="program-btn" data-program="week2">
+          WEEK 2<br />
+          <span>Threshold Builder</span>
+        </button>
+      </div>
     </div>
 
     <div id="workout-screen" class="screen">
@@ -33,7 +50,8 @@
 
       <div class="info-box">
         <p id="target-display">목표: Threshold Pace 적응</p>
-        <p id="speed-display">강도: RPE 6-8</p>
+        <p id="pace-display">페이스: 입력 대기</p>
+        <p id="speed-display">트레드밀 속도: 입력 대기</p>
         <p id="round-display">진행: 준비 중</p>
       </div>
 
@@ -54,8 +72,8 @@
       <p class="brand">NOLTO RUN TRAINER</p>
       <h1>훈련 완료</h1>
       <p class="description">
-        오늘은 Threshold Pace를 몸으로 익히는 훈련이었습니다.<br />
-        기록보다 중요한 건, 끝까지 페이스를 유지했다는 것입니다.
+        오늘의 훈련을 완료했습니다.<br />
+        다음 훈련에서는 같은 페이스를 더 안정적으로 유지하는 것이 목표입니다.
       </p>
       <button id="restart-btn">다시 시작</button>
     </div>
