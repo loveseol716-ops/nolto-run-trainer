@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOLTO RUN TRAINER</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <div id="start-screen" class="screen active">
+      <p class="brand">NOLTO RUN TRAINER</p>
+      <h1>WEEK 1</h1>
+      <p class="subtitle">Threshold Interval</p>
+      <p class="description">
+        오늘의 목표는 빠르게 달리는 것이 아니라,<br />
+        반복 가능한 Threshold Pace를 찾는 것입니다.
+      </p>
+      <button id="start-btn">START</button>
+    </div>
+
+    <div id="workout-screen" class="screen">
+      <p id="section-label">BRIEFING</p>
+      <h1 id="phase-label">오늘의 훈련 안내</h1>
+      <h2 id="time-display">00:00</h2>
+
+      <div class="info-box">
+        <p id="target-display">목표: Threshold Pace 적응</p>
+        <p id="speed-display">강도: RPE 6-8</p>
+        <p id="round-display">진행: 준비 중</p>
+      </div>
+
+      <p id="coach-message">
+        오늘 훈련을 선택한 여러분, 일단 대단합니다.
+      </p>
+
+      <p id="next-phase">다음 구간: Warm Up</p>
+
+      <div class="controls">
+        <button id="pause-btn">PAUSE</button>
+        <button id="next-btn">NEXT</button>
+        <button id="reset-btn">RESET</button>
+      </div>
+    </div>
+
+    <div id="finish-screen" class="screen">
+      <p class="brand">NOLTO RUN TRAINER</p>
+      <h1>훈련 완료</h1>
+      <p class="description">
+        오늘은 Threshold Pace를 몸으로 익히는 훈련이었습니다.<br />
+        기록보다 중요한 건, 끝까지 페이스를 유지했다는 것입니다.
+      </p>
+      <button id="restart-btn">다시 시작</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0B3D2E;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+}
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.screen {
+  display: none;
+  text-align: center;
+  width: 92%;
+  max-width: 1200px;
+}
+
+.screen.active {
+  display: block;
+}
+
+.brand {
+  font-size: 28px;
+  letter-spacing: 4px;
+  font-weight: bold;
+  opacity: 0.85;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 76px;
+  margin: 20px 0;
+}
+
+.subtitle {
+  font-size: 42px;
+  margin-bottom: 40px;
+  font-weight: bold;
+}
+
+.description {
+  font-size: 30px;
+  line-height: 1.5;
+  margin-bottom: 60px;
+}
+
+button {
+  font-size: 30px;
+  padding: 18px 52px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  background: #ffffff;
+  color: #0B3D2E;
+  font-weight: bold;
+}
+
+#section-label {
+  font-size: 28px;
+  letter-spacing: 3px;
+  opacity: 0.8;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+#phase-label {
+  font-size: 58px;
+  margin: 10px 0;
+}
+
+#time-display {
+  font-size: 150px;
+  margin: 20px 0;
+  line-height: 1;
+}
+
+.info-box {
+  margin: 30px auto;
+  padding: 24px 30px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 18px;
+  max-width: 900px;
+}
+
+.info-box p {
+  font-size: 30px;
+  margin: 12px 0;
+}
+
+#coach-message {
+  font-size: 34px;
+  margin: 42px auto 20px;
+  line-height: 1.45;
+  max-width: 1000px;
+}
+
+#next-phase {
+  font-size: 26px;
+  opacity: 0.8;
+  margin-top: 28px;
+}
+
+.controls {
+  margin-top: 42px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
