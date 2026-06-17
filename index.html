@@ -13,15 +13,21 @@
   <title>NOLTO RUN TRAINER</title>
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="app">
+
+    <!-- 시작 화면 -->
     <div id="start-screen" class="screen active">
       <p class="brand">NOLTO RUN TRAINER</p>
+
       <h1>PROGRAM SELECT</h1>
+
       <p class="subtitle">30분 TT 평균 페이스를 입력하세요</p>
 
       <div class="pace-input-box">
-        <label>30분 TT 평균 페이스</label>
+        <label for="pace-min">30분 TT 평균 페이스</label>
+
         <div class="pace-input-row">
           <input id="pace-min" type="number" placeholder="분" value="5" />
           <span>:</span>
@@ -30,16 +36,21 @@
         </div>
       </div>
 
+      <!-- 프로그램 버튼은 script.js가 자동으로 생성 -->
       <div id="program-list" class="program-list"></div>
+    </div>
 
+    <!-- 운동 진행 화면 -->
     <div id="workout-screen" class="screen">
       <p id="section-label">BRIEFING</p>
+
       <h1 id="phase-label">오늘의 훈련 안내</h1>
+
       <h2 id="time-display">00:00</h2>
 
       <div class="info-box">
         <p id="target-display">목표: Threshold Pace 적응</p>
-        <p id="pace-display">페이스: 입력 대기</p>
+        <p id="pace-display">권장 페이스: 입력 대기</p>
         <p id="speed-display">트레드밀 속도: 입력 대기</p>
         <p id="round-display">진행: 준비 중</p>
       </div>
@@ -57,18 +68,24 @@
       </div>
     </div>
 
+    <!-- 종료 화면 -->
     <div id="finish-screen" class="screen">
       <p class="brand">NOLTO RUN TRAINER</p>
+
       <h1>훈련 완료</h1>
+
       <p class="description">
         오늘의 훈련을 완료했습니다.<br />
         다음 훈련에서는 같은 페이스를 더 안정적으로 유지하는 것이 목표입니다.
       </p>
+
       <button id="restart-btn">다시 시작</button>
     </div>
+
   </div>
 
+  <!-- 순서 중요: programs.js 먼저, script.js 나중 -->
   <script src="programs.js"></script>
-<script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
