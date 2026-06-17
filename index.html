@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <!-- 프로그램 버튼은 script.js가 자동으로 생성 -->
+      <!-- 프로그램 버튼은 script.js가 자동 생성 -->
       <div id="program-list" class="program-list"></div>
     </div>
 
@@ -47,6 +47,18 @@
       <h1 id="phase-label">오늘의 훈련 안내</h1>
 
       <h2 id="time-display">00:00</h2>
+
+      <!-- 현재 구간 진행 바 -->
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="elapsed-display">00:00</span>
+          <span id="progress-percent">0%</span>
+        </div>
+
+        <div class="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+      </div>
 
       <div class="info-box">
         <p id="target-display">목표: Threshold Pace 적응</p>
