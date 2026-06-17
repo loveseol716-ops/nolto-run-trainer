@@ -2,8 +2,8 @@ const workouts = {
   week1: {
     title: "WEEK 1: Threshold Interval",
     buttonTitle: "WEEK 1",
-    buttonSubtitle: "Threshold Interval",
-    description: "Threshold Pace를 찾고, 반복 가능한 빠른 페이스에 적응하는 훈련입니다.",
+    buttonSubtitle: "Threshold + Plus",
+    description: "Threshold Pace와 Threshold Plus를 함께 경험하는 인터벌 훈련입니다.",
     steps: [
       {
         section: "BRIEFING",
@@ -11,19 +11,19 @@ const workouts = {
         time: 90,
         target: "Threshold Pace 적응",
         paceOffset: 0,
-        round: "총 소요 시간: 약 45분",
+        round: "총 소요 시간: 약 40분",
         message:
-          "오늘은 Threshold Interval 훈련입니다. 입력한 30분 TT 평균 페이스를 기준으로 오늘의 페이스가 자동 계산됩니다.",
+          "오늘은 Threshold Interval 훈련입니다. 입력한 30분 TT 평균 페이스를 기준으로 Threshold Pace가 자동 계산됩니다. 목표는 빠르게 시작하는 것이 아니라, 5라운드 동안 페이스를 유지하는 것입니다.",
       },
       {
         section: "BRIEFING",
         phase: "프로그램 구성 설명",
         time: 90,
-        target: "훈련 흐름 이해",
+        target: "Threshold + Threshold Plus",
         paceOffset: 0,
-        round: "Warm Up → Strides → Main → Cool Down",
+        round: "Warm Up → Strides → 5 Rounds → Cool Down",
         message:
-          "4분 Easy Jog로 몸을 올린 뒤, 20초 Strides와 40초 Easy Recovery를 4라운드 진행합니다. 본훈련은 3분 Threshold, 1분 Recovery, 1분 Threshold Plus, 1분 Recovery를 총 5라운드 반복합니다.",
+          "먼저 4분 Easy Jog로 몸을 올립니다. 이후 20초 Strides와 40초 Easy Recovery를 4라운드 진행합니다. 본훈련은 3분 Threshold, 1분 Recovery, 1분 Threshold Plus, 1분 Recovery를 총 5라운드 반복합니다.",
       },
       {
         section: "WARM UP",
@@ -33,7 +33,7 @@ const workouts = {
         paceOffset: 75,
         round: "4 Minute Easy Jog",
         message:
-          "가볍게 조깅을 시작합니다. 호흡을 편하게 만들고 몸을 준비하세요.",
+          "가볍게 조깅을 시작합니다. 아직 빠르게 달릴 필요 없습니다. 호흡을 편하게 만들고 몸을 준비하세요.",
       },
       ...Array.from({ length: 4 }).flatMap((_, i) => [
         {
@@ -44,7 +44,7 @@ const workouts = {
           paceOffset: 0,
           round: `Strides ${i + 1}/4`,
           message:
-            "20초 동안 부드럽게 속도를 올립니다. 전력질주가 아니라 Threshold Pace까지 끌어올립니다.",
+            "20초 Strides입니다. 전력질주가 아니라 Threshold Pace까지 부드럽게 속도를 올립니다.",
         },
         {
           section: "WARM UP",
@@ -54,7 +54,7 @@ const workouts = {
           paceOffset: 90,
           round: `Recovery ${i + 1}/4`,
           message:
-            "속도를 낮추고 호흡을 정리합니다. 다음 Strides를 준비하세요.",
+            "40초 Easy Recovery입니다. 속도를 낮추고 호흡을 정리하세요.",
         },
       ]),
       {
@@ -65,7 +65,7 @@ const workouts = {
         paceOffset: 0,
         round: "3분 + 1분 + 1분 + 1분 × 5R",
         message:
-          "본훈련은 5라운드입니다. Threshold는 30분 TT 평균 페이스, Threshold Plus는 그보다 조금 더 빠른 페이스로 진행합니다.",
+          "이제 본훈련입니다. Threshold 구간은 입력한 30분 TT 평균 페이스로 진행합니다. Threshold Plus는 기준 페이스보다 조금 더 빠르게 진행합니다. 회복 구간은 RPE 4 수준으로 낮춰주세요.",
       },
       ...Array.from({ length: 5 }).flatMap((_, i) => [
         {
@@ -86,7 +86,7 @@ const workouts = {
           paceOffset: 90,
           round: `Round ${i + 1}/5`,
           message:
-            "회복 구간입니다. 속도를 낮추고 호흡을 정리하세요.",
+            "1분 Recovery입니다. RPE 4 수준으로 속도를 낮추고 호흡을 정리하세요.",
         },
         {
           section: "MAIN SET",
@@ -96,7 +96,7 @@ const workouts = {
           paceOffset: -10,
           round: `Round ${i + 1}/5`,
           message:
-            "1분 Threshold Plus입니다. 기준 페이스보다 조금 더 빠르게 갑니다.",
+            "1분 Threshold Plus입니다. 기준 페이스보다 조금 더 빠르게 갑니다. 자세가 무너지지 않는 선에서 밀어붙이세요.",
         },
         {
           section: "MAIN SET",
@@ -106,7 +106,7 @@ const workouts = {
           paceOffset: 90,
           round: `Round ${i + 1}/5`,
           message:
-            "다시 회복입니다. 다음 라운드를 준비합니다.",
+            "다시 1분 Recovery입니다. 다음 라운드를 위해 호흡을 충분히 낮춰주세요.",
         },
       ]),
       {
@@ -117,7 +117,7 @@ const workouts = {
         paceOffset: 105,
         round: "5 Minute Cool Down",
         message:
-          "쿨다운입니다. 속도를 충분히 낮추고 편하게 움직입니다.",
+          "5분 쿨다운입니다. 속도를 충분히 낮추고 편하게 움직입니다. 오늘 훈련을 마무리합니다.",
       },
     ],
   },
@@ -134,7 +134,7 @@ const workouts = {
         time: 90,
         target: "Threshold 반복 능력 강화",
         paceOffset: 0,
-        round: "총 소요 시간: 약 52분",
+        round: "총 소요 시간: 약 50분",
         message:
           "오늘은 10세트 Threshold 훈련입니다. 입력한 30분 TT 평균 페이스를 기준으로 3분씩 반복합니다. 목표는 빠르게 시작하는 것이 아니라, 10세트 동안 일정한 페이스를 유지하는 것입니다.",
       },
@@ -156,7 +156,7 @@ const workouts = {
         paceOffset: 0,
         round: "첫 3세트는 보수적으로",
         message:
-          "Threshold 구간은 RPE 8 정도입니다. 숨은 차지만 무너지지 않아야 합니다. 첫 3세트에서 과하게 올리면 후반 7세트가 무너질 수 있습니다. 오늘의 핵심은 후반 유지입니다.",
+          "Threshold 구간은 RPE 8 정도입니다. 숨은 차지만 무너지지 않아야 합니다. 첫 3세트에서 과하게 올리면 후반부가 무너질 수 있습니다. 오늘의 핵심은 후반 유지입니다.",
       },
       {
         section: "WARM UP",
