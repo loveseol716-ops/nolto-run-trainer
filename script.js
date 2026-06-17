@@ -1,6 +1,7 @@
 let selectedWorkout = [];
 let currentIndex = 0;
 let remainingTime = 0;
+let currentStepTotalTime = 0;
 let timer = null;
 let isPaused = false;
 let thresholdPaceSeconds = 330;
@@ -14,7 +15,7 @@ const finishScreen = document.getElementById("finish-screen");
 const paceMinInput = document.getElementById("pace-min");
 const paceSecInput = document.getElementById("pace-sec");
 
-// 프로그램 버튼이 들어갈 영역
+// 프로그램 버튼 영역
 const programList = document.getElementById("program-list");
 
 // 버튼 요소
@@ -34,6 +35,11 @@ const roundDisplay = document.getElementById("round-display");
 const coachMessage = document.getElementById("coach-message");
 const nextPhase = document.getElementById("next-phase");
 
+// 진행 바 요소
+const elapsedDisplay = document.getElementById("elapsed-display");
+const progressPercent = document.getElementById("progress-percent");
+const progressFill = document.getElementById("progress-fill");
+
 // 화면 전환
 function showScreen(screen) {
   startScreen.classList.remove("active");
@@ -42,14 +48,14 @@ function showScreen(screen) {
   screen.classList.add("active");
 }
 
-// 초 → 00:00 형식
+// 초 → 00:00
 function formatTime(seconds) {
   const min = Math.floor(seconds / 60);
   const sec = seconds % 60;
   return `${String(min).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
 }
 
-// 초/km → 5:30/km 형식
+// 초/km → 5:30/km
 function formatPace(seconds) {
   const min = Math.floor(seconds / 60);
   const sec = seconds % 60;
@@ -91,6 +97,52 @@ function renderProgramButtons() {
   });
 }
 
+// 구간별 배경 톤 변경
+function updateBodyMode(current) {
+  document.body.classList.remove(
+    "briefing",
+    "warmup",
+    "main",
+    "recovery",
+    "cooldown"
+  );
+
+  const section = current.section.toLowerCase();
+  const phase = current.phase.toLowerCase();
+
+  if (section.includes("briefing")) {
+    document.body.classList.add("briefing");
+  } else if (section.includes("warm")) {
+    document.body.classList.add("warmup");
+  } else if (
+    phase.includes("recovery") ||
+    phase.includes("easy jog") ||
+    phase.includes("easy pace")
+  ) {
+    document.body.classList.add("recovery");
+  } else if (section.includes("cool")) {
+    document.body.classList.add("cooldown");
+  } else if (section.includes("main")) {
+    document.body.classList.add("main");
+  } else {
+    document.body.classList.add("briefing");
+  }
+}
+
+// 현재 구간 진행 바 업데이트
+function updateProgressBar() {
+  const elapsedTime = currentStepTotalTime - remainingTime;
+
+  const progress =
+    currentStepTotalTime > 0
+      ? Math.min((elapsedTime / currentStepTotalTime) * 100, 100)
+      : 0;
+
+  elapsedDisplay.textContent = formatTime(Math.max(elapsedTime, 0));
+  progressPercent.textContent = `${Math.round(progress)}%`;
+  progressFill.style.width = `${progress}%`;
+}
+
 // 현재 운동 화면 업데이트
 function updateScreen() {
   const current = selectedWorkout[currentIndex];
@@ -110,6 +162,9 @@ function updateScreen() {
   roundDisplay.textContent = `진행: ${current.round}`;
   coachMessage.textContent = current.message;
   nextPhase.textContent = next ? `다음 구간: ${next.phase}` : "마지막 구간";
+
+  updateProgressBar();
+  updateBodyMode(current);
 }
 
 // 알림음
@@ -149,6 +204,7 @@ function startWorkout(programKey) {
 
   currentIndex = 0;
   remainingTime = selectedWorkout[0].time;
+  currentStepTotalTime = selectedWorkout[0].time;
   isPaused = false;
   pauseBtn.textContent = "PAUSE";
 
@@ -183,11 +239,20 @@ function goToNextPhase() {
 
   if (currentIndex >= selectedWorkout.length) {
     clearInterval(timer);
+    document.body.classList.remove(
+      "briefing",
+      "warmup",
+      "main",
+      "recovery",
+      "cooldown"
+    );
     showScreen(finishScreen);
     return;
   }
 
   remainingTime = selectedWorkout[currentIndex].time;
+  currentStepTotalTime = selectedWorkout[currentIndex].time;
+
   updateScreen();
 }
 
@@ -198,8 +263,17 @@ function resetWorkout() {
   selectedWorkout = [];
   currentIndex = 0;
   remainingTime = 0;
+  currentStepTotalTime = 0;
   isPaused = false;
   pauseBtn.textContent = "PAUSE";
+
+  document.body.classList.remove(
+    "briefing",
+    "warmup",
+    "main",
+    "recovery",
+    "cooldown"
+  );
 
   showScreen(startScreen);
 }
