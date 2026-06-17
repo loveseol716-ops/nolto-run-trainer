@@ -62,8 +62,8 @@ h1 {
 }
 
 .subtitle {
-  font-size: clamp(28px, 4vw, 42px);
-  margin: 8px 0 20px;
+  font-size: clamp(24px, 3.5vw, 38px);
+  margin: 8px 0 18px;
   font-weight: bold;
 }
 
@@ -74,7 +74,76 @@ h1 {
 }
 
 
-/* 버튼 */
+/* 30분 TT 입력창 */
+
+.pace-input-box {
+  width: 90%;
+  max-width: 520px;
+  margin: 14px auto 22px;
+  padding: 16px 22px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 18px;
+}
+
+.pace-input-box label {
+  display: block;
+  font-size: clamp(18px, 2.2vw, 26px);
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.pace-input-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.pace-input-row input {
+  width: 90px;
+  padding: 12px;
+  font-size: 30px;
+  text-align: center;
+  border-radius: 12px;
+  border: none;
+  color: #0B3D2E;
+  font-weight: bold;
+}
+
+.pace-input-row span {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+
+/* 프로그램 버튼 */
+
+.program-list {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.program-btn {
+  min-width: 260px;
+  font-size: clamp(22px, 3vw, 30px);
+  line-height: 1.2;
+  padding: 18px 42px;
+}
+
+.program-btn span {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: clamp(16px, 2vw, 20px);
+  opacity: 0.85;
+}
+
+
+/* 버튼 공통 */
 
 button {
   font-size: clamp(20px, 2.8vw, 30px);
@@ -148,9 +217,23 @@ button {
 }
 
 
-/* 아이패드 가로 / 높이가 낮은 화면 대응 */
+/* 아이패드 가로 대응 */
 
 @media (max-height: 760px) {
+  h1 {
+    font-size: clamp(38px, 5vw, 60px);
+  }
+
+  .subtitle {
+    font-size: clamp(20px, 3vw, 30px);
+    margin-bottom: 12px;
+  }
+
+  .pace-input-box {
+    padding: 12px 18px;
+    margin: 10px auto 14px;
+  }
+
   #time-display {
     font-size: clamp(70px, 11vw, 120px);
   }
@@ -174,7 +257,7 @@ button {
 }
 
 
-/* 아이폰 가로 화면 전용 */
+/* 아이폰 가로 화면 */
 
 @media (max-width: 950px) and (max-height: 500px) {
   .app {
@@ -188,19 +271,60 @@ button {
   }
 
   h1 {
-    font-size: 34px;
+    font-size: 32px;
     margin: 4px 0;
   }
 
   .subtitle {
-    font-size: 22px;
-    margin: 4px 0 10px;
+    font-size: 18px;
+    margin: 4px 0 8px;
   }
 
   .description {
     font-size: 16px;
     line-height: 1.25;
     margin: 6px 0 14px;
+  }
+
+  .pace-input-box {
+    margin: 6px auto 8px;
+    padding: 8px 12px;
+    max-width: 420px;
+  }
+
+  .pace-input-box label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .pace-input-row {
+    gap: 8px;
+  }
+
+  .pace-input-row input {
+    width: 58px;
+    padding: 6px;
+    font-size: 17px;
+  }
+
+  .pace-input-row span {
+    font-size: 15px;
+  }
+
+  .program-list {
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .program-btn {
+    min-width: 160px;
+    font-size: 15px;
+    padding: 8px 12px;
+  }
+
+  .program-btn span {
+    font-size: 11px;
+    margin-top: 3px;
   }
 
   #section-label {
@@ -259,7 +383,7 @@ button {
 }
 
 
-/* 아이폰 세로 화면 대응 */
+/* 아이폰 세로 화면 */
 
 @media (max-width: 500px) and (orientation: portrait) {
   .app {
@@ -276,16 +400,39 @@ button {
   }
 
   h1 {
-    font-size: 38px;
+    font-size: 36px;
   }
 
   .subtitle {
-    font-size: 24px;
+    font-size: 20px;
   }
 
   .description {
     font-size: 17px;
     line-height: 1.35;
+  }
+
+  .pace-input-box {
+    padding: 12px;
+    margin: 10px auto 14px;
+  }
+
+  .pace-input-row input {
+    width: 68px;
+    font-size: 22px;
+  }
+
+  .program-list {
+    gap: 10px;
+  }
+
+  .program-btn {
+    min-width: 220px;
+    font-size: 20px;
+  }
+
+  .program-btn span {
+    font-size: 14px;
   }
 
   #section-label {
@@ -331,97 +478,5 @@ button {
   button {
     font-size: 15px;
     padding: 9px 18px;
-  }
-}
-.pace-input-box {
-  width: 90%;
-  max-width: 520px;
-  margin: 20px auto 28px;
-  padding: 18px 22px;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  border-radius: 18px;
-}
-
-.pace-input-box label {
-  display: block;
-  font-size: clamp(18px, 2.2vw, 26px);
-  font-weight: bold;
-  margin-bottom: 14px;
-}
-
-.pace-input-row {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-}
-
-.pace-input-row input {
-  width: 90px;
-  padding: 12px;
-  font-size: 30px;
-  text-align: center;
-  border-radius: 12px;
-  border: none;
-  color: #0B3D2E;
-  font-weight: bold;
-}
-
-.pace-input-row span {
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.program-list {
-  display: flex;
-  gap: 18px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.program-btn {
-  min-width: 260px;
-  line-height: 1.2;
-}
-
-.program-btn span {
-  font-size: 20px;
-  opacity: 0.85;
-}
-
-@media (max-width: 950px) and (max-height: 500px) {
-  .pace-input-box {
-    margin: 8px auto 12px;
-    padding: 10px 14px;
-    max-width: 420px;
-  }
-
-  .pace-input-box label {
-    font-size: 14px;
-    margin-bottom: 8px;
-  }
-
-  .pace-input-row input {
-    width: 64px;
-    padding: 7px;
-    font-size: 18px;
-  }
-
-  .pace-input-row span {
-    font-size: 16px;
-  }
-
-  .program-list {
-    gap: 8px;
-  }
-
-  .program-btn {
-    min-width: 170px;
-    font-size: 15px;
-    padding: 9px 14px;
-  }
-
-  .program-btn span {
-    font-size: 12px;
   }
 }
