@@ -5,6 +5,7 @@ let currentStepTotalTime = 0;
 let timer = null;
 let isPaused = false;
 let thresholdPaceSeconds = 330;
+let lastBeepSecond = null;
 
 // 화면 요소
 const startScreen = document.getElementById("start-screen");
@@ -39,6 +40,12 @@ const nextPhase = document.getElementById("next-phase");
 const elapsedDisplay = document.getElementById("elapsed-display");
 const progressPercent = document.getElementById("progress-percent");
 const progressFill = document.getElementById("progress-fill");
+
+// 카운트다운 오버레이 요소
+const countdownOverlay = document.getElementById("countdown-overlay");
+const countdownSmall = document.getElementById("countdown-small");
+const countdownText = document.getElementById("countdown-text");
+const countdownNext = document.getElementById("countdown-next");
 
 // 화면 전환
 function showScreen(screen) {
@@ -104,11 +111,16 @@ function updateBodyMode(current) {
     "warmup",
     "main",
     "recovery",
-    "cooldown"
+    "cooldown",
+    "countdown-mode"
   );
 
   const section = current.section.toLowerCase();
   const phase = current.phase.toLowerCase();
+
+  if (remainingTime <= 10 && remainingTime > 0) {
+    document.body.classList.add("countdown-mode");
+  }
 
   if (section.includes("briefing")) {
     document.body.classList.add("briefing");
@@ -143,6 +155,50 @@ function updateProgressBar() {
   progressFill.style.width = `${progress}%`;
 }
 
+// 카운트다운 오버레이 업데이트
+function updateCountdownOverlay() {
+  const next = selectedWorkout[currentIndex + 1];
+
+  if (remainingTime <= 10 && remainingTime > 3 && next) {
+    countdownOverlay.classList.add("show");
+    countdownOverlay.classList.remove("final-count", "go");
+    countdownSmall.textContent = "NEXT IN";
+    countdownText.textContent = remainingTime;
+    countdownNext.textContent = `다음 구간: ${next.phase}`;
+    return;
+  }
+
+  if (remainingTime <= 3 && remainingTime > 0 && next) {
+    countdownOverlay.classList.add("show", "final-count");
+    countdownOverlay.classList.remove("go");
+    countdownSmall.textContent = "READY";
+    countdownText.textContent = remainingTime;
+    countdownNext.textContent = `다음 구간: ${next.phase}`;
+    return;
+  }
+
+  if (remainingTime > 10 || !next) {
+    countdownOverlay.classList.remove("show", "final-count", "go");
+  }
+}
+
+// GO 오버레이
+function showGoOverlay() {
+  const current = selectedWorkout[currentIndex];
+
+  if (!current) return;
+
+  countdownOverlay.classList.add("show", "go");
+  countdownOverlay.classList.remove("final-count");
+  countdownSmall.textContent = "GO";
+  countdownText.textContent = current.phase;
+  countdownNext.textContent = current.target;
+
+  setTimeout(() => {
+    countdownOverlay.classList.remove("show", "go");
+  }, 900);
+}
+
 // 현재 운동 화면 업데이트
 function updateScreen() {
   const current = selectedWorkout[currentIndex];
@@ -165,10 +221,11 @@ function updateScreen() {
 
   updateProgressBar();
   updateBodyMode(current);
+  updateCountdownOverlay();
 }
 
-// 알림음
-function beep() {
+// 짧은 알림음
+function beepShort() {
   const audio = new AudioContext();
   const oscillator = audio.createOscillator();
   const gainNode = audio.createGain();
@@ -176,11 +233,37 @@ function beep() {
   oscillator.connect(gainNode);
   gainNode.connect(audio.destination);
 
-  oscillator.frequency.value = 800;
+  oscillator.frequency.value = 850;
   gainNode.gain.value = 0.12;
 
   oscillator.start();
-  oscillator.stop(audio.currentTime + 0.2);
+  oscillator.stop(audio.currentTime + 0.16);
+}
+
+// 긴 전환 알림음
+function beepLong() {
+  const audio = new AudioContext();
+  const oscillator = audio.createOscillator();
+  const gainNode = audio.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audio.destination);
+
+  oscillator.frequency.value = 1050;
+  gainNode.gain.value = 0.16;
+
+  oscillator.start();
+  oscillator.stop(audio.currentTime + 0.35);
+}
+
+// 카운트다운 사운드 제어
+function handleCountdownSound() {
+  if (remainingTime <= 3 && remainingTime > 0) {
+    if (lastBeepSecond !== remainingTime) {
+      beepShort();
+      lastBeepSecond = remainingTime;
+    }
+  }
 }
 
 // 운동 시작
@@ -206,6 +289,7 @@ function startWorkout(programKey) {
   remainingTime = selectedWorkout[0].time;
   currentStepTotalTime = selectedWorkout[0].time;
   isPaused = false;
+  lastBeepSecond = null;
   pauseBtn.textContent = "PAUSE";
 
   showScreen(workoutScreen);
@@ -218,10 +302,7 @@ function startWorkout(programKey) {
 
     remainingTime--;
     updateScreen();
-
-    if (remainingTime <= 3 && remainingTime > 0) {
-      beep();
-    }
+    handleCountdownSound();
 
     if (remainingTime <= 0) {
       goToNextPhase();
@@ -233,27 +314,33 @@ function startWorkout(programKey) {
 function goToNextPhase() {
   if (selectedWorkout.length === 0) return;
 
-  beep();
+  beepLong();
 
   currentIndex++;
 
   if (currentIndex >= selectedWorkout.length) {
     clearInterval(timer);
+
     document.body.classList.remove(
       "briefing",
       "warmup",
       "main",
       "recovery",
-      "cooldown"
+      "cooldown",
+      "countdown-mode"
     );
+
+    countdownOverlay.classList.remove("show", "final-count", "go");
     showScreen(finishScreen);
     return;
   }
 
   remainingTime = selectedWorkout[currentIndex].time;
   currentStepTotalTime = selectedWorkout[currentIndex].time;
+  lastBeepSecond = null;
 
   updateScreen();
+  showGoOverlay();
 }
 
 // 리셋
@@ -265,6 +352,7 @@ function resetWorkout() {
   remainingTime = 0;
   currentStepTotalTime = 0;
   isPaused = false;
+  lastBeepSecond = null;
   pauseBtn.textContent = "PAUSE";
 
   document.body.classList.remove(
@@ -272,8 +360,11 @@ function resetWorkout() {
     "warmup",
     "main",
     "recovery",
-    "cooldown"
+    "cooldown",
+    "countdown-mode"
   );
+
+  countdownOverlay.classList.remove("show", "final-count", "go");
 
   showScreen(startScreen);
 }
