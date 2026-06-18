@@ -21,22 +21,26 @@
     <div id="start-screen" class="screen active">
       <p class="brand">NOLTO RUN TRAINER</p>
 
-      <h1>PROGRAM SELECT</h1>
+      <h1>MEMBER LOGIN</h1>
 
-      <p class="subtitle">30분 TT 평균 페이스를 입력하세요</p>
+      <p class="subtitle">멤버 코드를 입력하세요</p>
 
-      <div class="pace-input-box">
-        <label for="pace-min">30분 TT 평균 페이스</label>
+      <div class="member-input-box">
+        <label for="member-code-input">MEMBER CODE</label>
 
-        <div class="pace-input-row">
-          <input id="pace-min" type="number" placeholder="분" value="5" />
-          <span>:</span>
-          <input id="pace-sec" type="number" placeholder="초" value="30" />
-          <span>/km</span>
+        <div class="member-input-row">
+          <input id="member-code-input" type="text" placeholder="예: JH01" />
+          <button id="member-login-btn">ENTER</button>
         </div>
       </div>
 
-      <div id="program-list" class="program-list"></div>
+      <div id="member-info-box" class="member-info-box hidden">
+        <p id="member-name-display">멤버명</p>
+        <p id="member-pace-display">현재 기준 페이스</p>
+        <p id="member-speed-display">트레드밀 속도</p>
+      </div>
+
+      <div id="program-list" class="program-list hidden"></div>
     </div>
 
     <!-- 운동 진행 화면 -->
@@ -78,18 +82,41 @@
       </div>
     </div>
 
+    <!-- RPE 입력 화면 -->
+    <div id="rpe-screen" class="screen">
+      <p class="brand">NOLTO RUN TRAINER</p>
+
+      <h1>MAIN SET RPE</h1>
+
+      <p class="description">
+        오늘 본세트 체감 강도를 선택해주세요.<br />
+        이 값은 다음 기준 페이스 보정에 사용됩니다.
+      </p>
+
+      <div id="rpe-target-display" class="rpe-target-box">
+        목표 RPE: 8-9
+      </div>
+
+      <div class="rpe-button-row">
+        <button class="rpe-btn" data-rpe="6">6</button>
+        <button class="rpe-btn" data-rpe="7">7</button>
+        <button class="rpe-btn" data-rpe="8">8</button>
+        <button class="rpe-btn" data-rpe="9">9</button>
+        <button class="rpe-btn" data-rpe="10">10</button>
+      </div>
+    </div>
+
     <!-- 종료 화면 -->
     <div id="finish-screen" class="screen">
       <p class="brand">NOLTO RUN TRAINER</p>
 
       <h1>훈련 완료</h1>
 
-      <p class="description">
-        오늘의 훈련을 완료했습니다.<br />
-        다음 훈련에서는 같은 페이스를 더 안정적으로 유지하는 것이 목표입니다.
+      <p id="finish-result" class="description">
+        오늘의 훈련을 완료했습니다.
       </p>
 
-      <button id="restart-btn">다시 시작</button>
+      <button id="restart-btn">처음으로</button>
     </div>
 
   </div>
@@ -101,6 +128,7 @@
     <p id="countdown-next">다음 구간 준비</p>
   </div>
 
+  <script src="members.js"></script>
   <script src="programs.js"></script>
   <script src="script.js"></script>
 </body>
