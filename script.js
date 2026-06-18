@@ -10,6 +10,7 @@ let timer = null;
 let isPaused = false;
 let thresholdPaceSeconds = 330;
 let lastBeepSecond = null;
+let audioContext = null;
 
 // 화면 요소
 const startScreen = document.getElementById("start-screen");
@@ -57,7 +58,6 @@ const countdownText = document.getElementById("countdown-text");
 const countdownNext = document.getElementById("countdown-next");
 
 // RPE 요소
-const rpeTargetDisplay = document.getElementById("rpe-target-display");
 const rpeButtons = document.querySelectorAll(".rpe-btn");
 const finishResult = document.getElementById("finish-result");
 
@@ -95,6 +95,50 @@ function calculatePace(baseSeconds, offset) {
   return baseSeconds + offset;
 }
 
+// 오디오 초기화
+function initAudio() {
+  if (!audioContext) {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if (audioContext.state === "suspended") {
+    audioContext.resume();
+  }
+}
+
+// 알림음 생성
+function playBeep(frequency, duration, volume) {
+  initAudio();
+
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  oscillator.frequency.value = frequency;
+  oscillator.type = "sine";
+
+  gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+  gainNode.gain.exponentialRampToValueAtTime(
+    0.001,
+    audioContext.currentTime + duration
+  );
+
+  oscillator.start(audioContext.currentTime);
+  oscillator.stop(audioContext.currentTime + duration);
+}
+
+// 짧은 알림음
+function beepShort() {
+  playBeep(900, 0.14, 0.16);
+}
+
+// 긴 전환 알림음
+function beepLong() {
+  playBeep(1100, 0.32, 0.18);
+}
+
 // localStorage key
 function getMemberStorageKey(code) {
   return `nolto_member_${code}`;
@@ -125,6 +169,7 @@ function loadMemberData(code) {
 // 멤버 데이터 저장
 function saveMemberData() {
   if (!currentMemberCode || !currentMember) return;
+
   localStorage.setItem(
     getMemberStorageKey(currentMemberCode),
     JSON.stringify(currentMember)
@@ -144,6 +189,8 @@ function loginMember() {
     alert("등록되지 않은 멤버 코드입니다.");
     return;
   }
+
+  initAudio();
 
   currentMemberCode = code;
   currentMember = loadMemberData(code);
@@ -303,38 +350,6 @@ function updateScreen() {
   updateCountdownOverlay();
 }
 
-// 짧은 알림음
-function beepShort() {
-  const audio = new AudioContext();
-  const oscillator = audio.createOscillator();
-  const gainNode = audio.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audio.destination);
-
-  oscillator.frequency.value = 850;
-  gainNode.gain.value = 0.12;
-
-  oscillator.start();
-  oscillator.stop(audio.currentTime + 0.16);
-}
-
-// 긴 전환 알림음
-function beepLong() {
-  const audio = new AudioContext();
-  const oscillator = audio.createOscillator();
-  const gainNode = audio.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audio.destination);
-
-  oscillator.frequency.value = 1050;
-  gainNode.gain.value = 0.16;
-
-  oscillator.start();
-  oscillator.stop(audio.currentTime + 0.35);
-}
-
 // 카운트다운 사운드 제어
 function handleCountdownSound() {
   if (remainingTime <= 3 && remainingTime > 0) {
@@ -351,6 +366,8 @@ function startWorkout(programKey) {
     alert("먼저 멤버 코드를 입력해주세요.");
     return;
   }
+
+  initAudio();
 
   selectedProgramKey = programKey;
   thresholdPaceSeconds = currentMember.basePaceSeconds;
@@ -372,8 +389,11 @@ function startWorkout(programKey) {
     if (isPaused) return;
 
     remainingTime--;
-    updateScreen();
+
+    // 소리를 먼저 실행해서 화면 숫자와 체감 싱크를 맞춤
     handleCountdownSound();
+
+    updateScreen();
 
     if (remainingTime <= 0) {
       goToNextPhase();
@@ -417,11 +437,6 @@ function goToNextPhase() {
 
 // RPE 입력 화면
 function showRpeScreen() {
-  const program = workouts[selectedProgramKey];
-  const min = program.targetRpeMin || 8;
-  const max = program.targetRpeMax || 9;
-
-  rpeTargetDisplay.textContent = `오늘 본세트 목표 RPE: ${min}-${max}`;
   showScreen(rpeScreen);
 }
 
@@ -461,7 +476,7 @@ function calculateWeeklyAdjustment(results) {
 
   return {
     adjustment: 0,
-    message: "최근 2회 결과가 크게 한 방향으로 벗어나지 않았습니다. 기준 페이스를 유지합니다."
+    message: "최근 2회 결과가 한 방향으로 벗어나지 않았습니다. 기준 페이스를 유지합니다."
   };
 }
 
@@ -491,7 +506,7 @@ function submitRpe(actualRpe) {
   if (weeklyAdjustment.adjustment !== 0) {
     currentMember.basePaceSeconds += weeklyAdjustment.adjustment;
 
-    // 보정 후에는 새로운 주간 기준으로 다시 시작
+    // 보정 후에는 새로운 기준으로 다시 2회 측정 시작
     currentMember.weeklyResults = [];
   }
 
@@ -502,17 +517,16 @@ function submitRpe(actualRpe) {
   let resultText = "";
 
   if (result === "LOW") {
-    resultText = "오늘 본세트는 목표보다 조금 여유 있었습니다.";
+    resultText = "오늘 본세트는 조금 여유 있었습니다.";
   } else if (result === "HIGH") {
-    resultText = "오늘 본세트는 목표보다 강도가 높았습니다.";
+    resultText = "오늘 본세트는 강도가 높았습니다.";
   } else {
-    resultText = "오늘 본세트는 목표 강도에 적절했습니다.";
+    resultText = "오늘 본세트는 적절한 강도였습니다.";
   }
 
   finishResult.innerHTML = `
     ${currentMember.name}님 훈련 완료<br /><br />
     오늘 RPE: ${actualRpe}<br />
-    목표 RPE: ${targetMin}-${targetMax}<br />
     판정: ${resultText}<br /><br />
     ${weeklyAdjustment.message}<br /><br />
     이전 기준 페이스: ${formatPace(beforePace)}<br />
