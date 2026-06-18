@@ -41,6 +41,14 @@ body.cooldown {
   background: #2E2E2E;
 }
 
+body.countdown-mode #time-display {
+  transform: scale(1.06);
+}
+
+body.countdown-mode #progress-fill {
+  animation: pulse 0.7s infinite;
+}
+
 /* 전체 앱 레이아웃 */
 .app {
   width: 100vw;
@@ -211,6 +219,7 @@ button:active {
   font-size: clamp(76px, 11.5vw, 132px);
   margin: 4px 0;
   line-height: 0.9;
+  transition: transform 0.25s ease;
 }
 
 
@@ -318,6 +327,94 @@ button:active {
 
 .controls button {
   min-width: 140px;
+}
+
+
+/* 카운트다운 오버레이 */
+
+.countdown-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(3px);
+}
+
+.countdown-overlay.show {
+  display: flex;
+}
+
+#countdown-small {
+  font-size: clamp(26px, 4vw, 54px);
+  font-weight: 900;
+  letter-spacing: 4px;
+  margin: 0 0 12px;
+}
+
+#countdown-text {
+  font-size: clamp(90px, 16vw, 220px);
+  font-weight: 900;
+  margin: 0;
+  line-height: 0.9;
+}
+
+#countdown-next {
+  font-size: clamp(24px, 3.6vw, 48px);
+  font-weight: 800;
+  margin: 24px 0 0;
+}
+
+.countdown-overlay.final-count #countdown-text {
+  animation: pop 0.45s ease;
+}
+
+.countdown-overlay.go {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.countdown-overlay.go #countdown-small {
+  font-size: clamp(40px, 7vw, 90px);
+}
+
+.countdown-overlay.go #countdown-text {
+  font-size: clamp(50px, 9vw, 110px);
+}
+
+
+/* 애니메이션 */
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.45;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.7);
+  }
+
+  60% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 
@@ -611,6 +708,14 @@ button:active {
     font-size: 14px;
     padding: 6px 14px;
     border-radius: 10px;
+  }
+
+  #countdown-text {
+    font-size: 80px;
+  }
+
+  #countdown-next {
+    font-size: 20px;
   }
 }
 
