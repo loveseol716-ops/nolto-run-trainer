@@ -1,4 +1,8 @@
 let selectedWorkout = [];
+let selectedProgramKey = null;
+let currentMemberCode = null;
+let currentMember = null;
+
 let currentIndex = 0;
 let remainingTime = 0;
 let currentStepTotalTime = 0;
@@ -10,11 +14,16 @@ let lastBeepSecond = null;
 // 화면 요소
 const startScreen = document.getElementById("start-screen");
 const workoutScreen = document.getElementById("workout-screen");
+const rpeScreen = document.getElementById("rpe-screen");
 const finishScreen = document.getElementById("finish-screen");
 
-// 입력 요소
-const paceMinInput = document.getElementById("pace-min");
-const paceSecInput = document.getElementById("pace-sec");
+// 멤버 로그인 요소
+const memberCodeInput = document.getElementById("member-code-input");
+const memberLoginBtn = document.getElementById("member-login-btn");
+const memberInfoBox = document.getElementById("member-info-box");
+const memberNameDisplay = document.getElementById("member-name-display");
+const memberPaceDisplay = document.getElementById("member-pace-display");
+const memberSpeedDisplay = document.getElementById("member-speed-display");
 
 // 프로그램 버튼 영역
 const programList = document.getElementById("program-list");
@@ -47,10 +56,16 @@ const countdownSmall = document.getElementById("countdown-small");
 const countdownText = document.getElementById("countdown-text");
 const countdownNext = document.getElementById("countdown-next");
 
+// RPE 요소
+const rpeTargetDisplay = document.getElementById("rpe-target-display");
+const rpeButtons = document.querySelectorAll(".rpe-btn");
+const finishResult = document.getElementById("finish-result");
+
 // 화면 전환
 function showScreen(screen) {
   startScreen.classList.remove("active");
   workoutScreen.classList.remove("active");
+  rpeScreen.classList.remove("active");
   finishScreen.classList.remove("active");
   screen.classList.add("active");
 }
@@ -78,6 +93,70 @@ function paceToSpeed(secondsPerKm) {
 // 기준 페이스 + 오프셋
 function calculatePace(baseSeconds, offset) {
   return baseSeconds + offset;
+}
+
+// localStorage key
+function getMemberStorageKey(code) {
+  return `nolto_member_${code}`;
+}
+
+// 저장된 멤버 데이터 불러오기
+function loadMemberData(code) {
+  const saved = localStorage.getItem(getMemberStorageKey(code));
+
+  if (saved) {
+    return JSON.parse(saved);
+  }
+
+  const base = members[code];
+
+  const newMemberData = {
+    code,
+    name: base.name,
+    basePaceSeconds: base.basePaceSeconds,
+    weeklyResults: []
+  };
+
+  localStorage.setItem(getMemberStorageKey(code), JSON.stringify(newMemberData));
+
+  return newMemberData;
+}
+
+// 멤버 데이터 저장
+function saveMemberData() {
+  if (!currentMemberCode || !currentMember) return;
+  localStorage.setItem(
+    getMemberStorageKey(currentMemberCode),
+    JSON.stringify(currentMember)
+  );
+}
+
+// 멤버 로그인
+function loginMember() {
+  const code = memberCodeInput.value.trim().toUpperCase();
+
+  if (!code) {
+    alert("멤버 코드를 입력해주세요.");
+    return;
+  }
+
+  if (!members[code]) {
+    alert("등록되지 않은 멤버 코드입니다.");
+    return;
+  }
+
+  currentMemberCode = code;
+  currentMember = loadMemberData(code);
+  thresholdPaceSeconds = currentMember.basePaceSeconds;
+
+  memberNameDisplay.textContent = `${currentMember.name}님`;
+  memberPaceDisplay.textContent = `현재 기준 페이스: ${formatPace(thresholdPaceSeconds)}`;
+  memberSpeedDisplay.textContent = `트레드밀 속도: ${paceToSpeed(thresholdPaceSeconds)} km/h`;
+
+  memberInfoBox.classList.remove("hidden");
+  programList.classList.remove("hidden");
+
+  renderProgramButtons();
 }
 
 // 프로그램 버튼 자동 생성
@@ -268,21 +347,13 @@ function handleCountdownSound() {
 
 // 운동 시작
 function startWorkout(programKey) {
-  const min = Number(paceMinInput.value);
-  const sec = Number(paceSecInput.value);
-
-  if (
-    Number.isNaN(min) ||
-    Number.isNaN(sec) ||
-    min <= 0 ||
-    sec < 0 ||
-    sec >= 60
-  ) {
-    alert("30분 TT 평균 페이스를 올바르게 입력해주세요. 예: 5분 30초");
+  if (!currentMember) {
+    alert("먼저 멤버 코드를 입력해주세요.");
     return;
   }
 
-  thresholdPaceSeconds = min * 60 + sec;
+  selectedProgramKey = programKey;
+  thresholdPaceSeconds = currentMember.basePaceSeconds;
   selectedWorkout = workouts[programKey].steps;
 
   currentIndex = 0;
@@ -331,7 +402,8 @@ function goToNextPhase() {
     );
 
     countdownOverlay.classList.remove("show", "final-count", "go");
-    showScreen(finishScreen);
+
+    showRpeScreen();
     return;
   }
 
@@ -343,11 +415,119 @@ function goToNextPhase() {
   showGoOverlay();
 }
 
+// RPE 입력 화면
+function showRpeScreen() {
+  const program = workouts[selectedProgramKey];
+  const min = program.targetRpeMin || 8;
+  const max = program.targetRpeMax || 9;
+
+  rpeTargetDisplay.textContent = `오늘 본세트 목표 RPE: ${min}-${max}`;
+  showScreen(rpeScreen);
+}
+
+// RPE 판정
+function judgeRpe(actualRpe, targetMin, targetMax) {
+  if (actualRpe < targetMin) return "LOW";
+  if (actualRpe > targetMax) return "HIGH";
+  return "OK";
+}
+
+// 주간 2회 기준 보정
+function calculateWeeklyAdjustment(results) {
+  if (results.length < 2) {
+    return {
+      adjustment: 0,
+      message: "이번 주 1회 기록 완료. 2회 기록 후 기준 페이스가 보정됩니다."
+    };
+  }
+
+  const lastTwo = results.slice(-2);
+  const first = lastTwo[0].result;
+  const second = lastTwo[1].result;
+
+  if (first === "LOW" && second === "LOW") {
+    return {
+      adjustment: -5,
+      message: "최근 2회 모두 목표보다 쉬웠습니다. 다음 기준 페이스를 5초 빠르게 조정합니다."
+    };
+  }
+
+  if (first === "HIGH" && second === "HIGH") {
+    return {
+      adjustment: 5,
+      message: "최근 2회 모두 목표보다 과했습니다. 다음 기준 페이스를 5초 느리게 조정합니다."
+    };
+  }
+
+  return {
+    adjustment: 0,
+    message: "최근 2회 결과가 크게 한 방향으로 벗어나지 않았습니다. 기준 페이스를 유지합니다."
+  };
+}
+
+// RPE 저장 및 결과 표시
+function submitRpe(actualRpe) {
+  const program = workouts[selectedProgramKey];
+  const targetMin = program.targetRpeMin || 8;
+  const targetMax = program.targetRpeMax || 9;
+
+  const result = judgeRpe(actualRpe, targetMin, targetMax);
+
+  const record = {
+    date: new Date().toISOString(),
+    programKey: selectedProgramKey,
+    programName: program.buttonTitle,
+    targetRpeMin: targetMin,
+    targetRpeMax: targetMax,
+    actualRpe,
+    result
+  };
+
+  currentMember.weeklyResults.push(record);
+
+  const weeklyAdjustment = calculateWeeklyAdjustment(currentMember.weeklyResults);
+  const beforePace = currentMember.basePaceSeconds;
+
+  if (weeklyAdjustment.adjustment !== 0) {
+    currentMember.basePaceSeconds += weeklyAdjustment.adjustment;
+
+    // 보정 후에는 새로운 주간 기준으로 다시 시작
+    currentMember.weeklyResults = [];
+  }
+
+  const afterPace = currentMember.basePaceSeconds;
+
+  saveMemberData();
+
+  let resultText = "";
+
+  if (result === "LOW") {
+    resultText = "오늘 본세트는 목표보다 조금 여유 있었습니다.";
+  } else if (result === "HIGH") {
+    resultText = "오늘 본세트는 목표보다 강도가 높았습니다.";
+  } else {
+    resultText = "오늘 본세트는 목표 강도에 적절했습니다.";
+  }
+
+  finishResult.innerHTML = `
+    ${currentMember.name}님 훈련 완료<br /><br />
+    오늘 RPE: ${actualRpe}<br />
+    목표 RPE: ${targetMin}-${targetMax}<br />
+    판정: ${resultText}<br /><br />
+    ${weeklyAdjustment.message}<br /><br />
+    이전 기준 페이스: ${formatPace(beforePace)}<br />
+    현재 기준 페이스: ${formatPace(afterPace)}
+  `;
+
+  showScreen(finishScreen);
+}
+
 // 리셋
 function resetWorkout() {
   clearInterval(timer);
 
   selectedWorkout = [];
+  selectedProgramKey = null;
   currentIndex = 0;
   remainingTime = 0;
   currentStepTotalTime = 0;
@@ -366,23 +546,38 @@ function resetWorkout() {
 
   countdownOverlay.classList.remove("show", "final-count", "go");
 
+  if (currentMember) {
+    thresholdPaceSeconds = currentMember.basePaceSeconds;
+    memberPaceDisplay.textContent = `현재 기준 페이스: ${formatPace(thresholdPaceSeconds)}`;
+    memberSpeedDisplay.textContent = `트레드밀 속도: ${paceToSpeed(thresholdPaceSeconds)} km/h`;
+  }
+
   showScreen(startScreen);
 }
 
-// 일시정지 / 재시작
+// 이벤트 연결
+memberLoginBtn.addEventListener("click", loginMember);
+
+memberCodeInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    loginMember();
+  }
+});
+
 pauseBtn.addEventListener("click", () => {
   isPaused = !isPaused;
   pauseBtn.textContent = isPaused ? "RESUME" : "PAUSE";
 });
 
-// 다음 단계
 nextBtn.addEventListener("click", goToNextPhase);
 
-// 리셋
 resetBtn.addEventListener("click", resetWorkout);
 
-// 완료 후 다시 시작
 restartBtn.addEventListener("click", resetWorkout);
 
-// 처음 화면에 프로그램 버튼 생성
-renderProgramButtons();
+rpeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const rpe = Number(button.dataset.rpe);
+    submitRpe(rpe);
+  });
+});
