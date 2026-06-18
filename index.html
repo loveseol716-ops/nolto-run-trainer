@@ -36,7 +36,6 @@
         </div>
       </div>
 
-      <!-- 프로그램 버튼은 script.js가 자동 생성 -->
       <div id="program-list" class="program-list"></div>
     </div>
 
@@ -48,7 +47,6 @@
 
       <h2 id="time-display">00:00</h2>
 
-      <!-- 현재 구간 진행 바 -->
       <div class="progress-wrap">
         <div class="progress-label">
           <span id="elapsed-display">00:00</span>
@@ -96,7 +94,13 @@
 
   </div>
 
-  <!-- 순서 중요: programs.js 먼저, script.js 나중 -->
+  <!-- 카운트다운 오버레이 -->
+  <div id="countdown-overlay" class="countdown-overlay">
+    <p id="countdown-small">NEXT IN</p>
+    <h1 id="countdown-text">10</h1>
+    <p id="countdown-next">다음 구간 준비</p>
+  </div>
+
   <script src="programs.js"></script>
   <script src="script.js"></script>
 </body>
