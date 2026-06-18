@@ -8,6 +8,11 @@ const members = {
     name: "윤다원",
     basePaceSeconds: 270
   },
+  
+  DS01: {
+    name: "배다슬",
+    basePaceSeconds: 370
+  },
 
   TEST01: {
     name: "테스트멤버",
