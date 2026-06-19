@@ -19,6 +19,11 @@ const members = {
     basePaceSeconds: 330
   },
 
+  NR01: {
+    name: "서나리",
+    basePaceSeconds: 330
+  },
+
   TEST01: {
     name: "테스트멤버",
     basePaceSeconds: 330
