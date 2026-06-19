@@ -24,6 +24,11 @@ const members = {
     basePaceSeconds: 330
   },
 
+  JH3: {
+    name: "정지혜",
+    basePaceSeconds: 322
+  },
+
   TEST01: {
     name: "테스트멤버",
     basePaceSeconds: 330
