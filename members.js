@@ -13,6 +13,11 @@ const members = {
     name: "배다슬",
     basePaceSeconds: 370
   },
+  
+  JH02: {
+    name: "오정화",
+    basePaceSeconds: 330
+  },
 
   TEST01: {
     name: "테스트멤버",
