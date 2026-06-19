@@ -1,3 +1,4 @@
+const API_URL = "https://script.google.com/macros/s/AKfycbwWdEm_u4DimzCdlRDPKRI-9b70dADd54EU9OOFvpnHyW5oVhjyKCo0WuCtSSy7ridFoA/exec";
 let selectedWorkout = [];
 let selectedProgramKey = null;
 let currentMemberCode = null;
