@@ -1,4 +1,5 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwWdEm_u4DimzCdlRDPKRI-9b70dADd54EU9OOFvpnHyW5oVhjyKCo0WuCtSSy7ridFoA/exec";
+
 let selectedWorkout = [];
 let selectedProgramKey = null;
 let currentMemberCode = null;
@@ -140,45 +141,8 @@ function beepLong() {
   playBeep(1100, 0.32, 0.18);
 }
 
-// localStorage key
-function getMemberStorageKey(code) {
-  return `nolto_member_${code}`;
-}
-
-// 저장된 멤버 데이터 불러오기
-function loadMemberData(code) {
-  const saved = localStorage.getItem(getMemberStorageKey(code));
-
-  if (saved) {
-    return JSON.parse(saved);
-  }
-
-  const base = members[code];
-
-  const newMemberData = {
-    code,
-    name: base.name,
-    basePaceSeconds: base.basePaceSeconds,
-    weeklyResults: []
-  };
-
-  localStorage.setItem(getMemberStorageKey(code), JSON.stringify(newMemberData));
-
-  return newMemberData;
-}
-
-// 멤버 데이터 저장
-function saveMemberData() {
-  if (!currentMemberCode || !currentMember) return;
-
-  localStorage.setItem(
-    getMemberStorageKey(currentMemberCode),
-    JSON.stringify(currentMember)
-  );
-}
-
-// 멤버 로그인
-function loginMember() {
+// 멤버 로그인: Google Sheet에서 멤버 정보 불러오기
+async function loginMember() {
   const code = memberCodeInput.value.trim().toUpperCase();
 
   if (!code) {
@@ -186,25 +150,40 @@ function loginMember() {
     return;
   }
 
-  if (!members[code]) {
-    alert("등록되지 않은 멤버 코드입니다.");
-    return;
+  try {
+    initAudio();
+
+    memberLoginBtn.textContent = "LOADING...";
+
+    const url = `${API_URL}?action=getMember&code=${encodeURIComponent(code)}`;
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (!data.success) {
+      alert(data.message || "멤버 정보를 불러오지 못했습니다.");
+      memberLoginBtn.textContent = "ENTER";
+      return;
+    }
+
+    currentMemberCode = data.member.code;
+    currentMember = data.member;
+    thresholdPaceSeconds = Number(currentMember.basePaceSeconds);
+
+    memberNameDisplay.textContent = `${currentMember.name}님`;
+    memberPaceDisplay.textContent = `현재 기준 페이스: ${formatPace(thresholdPaceSeconds)}`;
+    memberSpeedDisplay.textContent = `트레드밀 속도: ${paceToSpeed(thresholdPaceSeconds)} km/h`;
+
+    memberInfoBox.classList.remove("hidden");
+    programList.classList.remove("hidden");
+
+    renderProgramButtons();
+
+    memberLoginBtn.textContent = "ENTER";
+  } catch (error) {
+    console.error(error);
+    alert("Google Sheet 연결에 실패했습니다. Apps Script 배포 URL을 확인해주세요.");
+    memberLoginBtn.textContent = "ENTER";
   }
-
-  initAudio();
-
-  currentMemberCode = code;
-  currentMember = loadMemberData(code);
-  thresholdPaceSeconds = currentMember.basePaceSeconds;
-
-  memberNameDisplay.textContent = `${currentMember.name}님`;
-  memberPaceDisplay.textContent = `현재 기준 페이스: ${formatPace(thresholdPaceSeconds)}`;
-  memberSpeedDisplay.textContent = `트레드밀 속도: ${paceToSpeed(thresholdPaceSeconds)} km/h`;
-
-  memberInfoBox.classList.remove("hidden");
-  programList.classList.remove("hidden");
-
-  renderProgramButtons();
 }
 
 // 프로그램 버튼 자동 생성
@@ -371,7 +350,7 @@ function startWorkout(programKey) {
   initAudio();
 
   selectedProgramKey = programKey;
-  thresholdPaceSeconds = currentMember.basePaceSeconds;
+  thresholdPaceSeconds = Number(currentMember.basePaceSeconds);
   selectedWorkout = workouts[programKey].steps;
 
   currentIndex = 0;
@@ -391,9 +370,7 @@ function startWorkout(programKey) {
 
     remainingTime--;
 
-    // 소리를 먼저 실행해서 화면 숫자와 체감 싱크를 맞춤
     handleCountdownSound();
-
     updateScreen();
 
     if (remainingTime <= 0) {
@@ -441,100 +418,53 @@ function showRpeScreen() {
   showScreen(rpeScreen);
 }
 
-// RPE 판정
-function judgeRpe(actualRpe, targetMin, targetMax) {
-  if (actualRpe < targetMin) return "LOW";
-  if (actualRpe > targetMax) return "HIGH";
-  return "OK";
-}
-
-// 주간 2회 기준 보정
-function calculateWeeklyAdjustment(results) {
-  if (results.length < 2) {
-    return {
-      adjustment: 0,
-      message: "이번 주 1회 기록 완료. 2회 기록 후 기준 페이스가 보정됩니다."
-    };
+// RPE 저장: Google Sheet로 전송
+async function submitRpe(actualRpe) {
+  if (!currentMember || !selectedProgramKey) {
+    alert("멤버 또는 프로그램 정보가 없습니다.");
+    return;
   }
 
-  const lastTwo = results.slice(-2);
-  const first = lastTwo[0].result;
-  const second = lastTwo[1].result;
-
-  if (first === "LOW" && second === "LOW") {
-    return {
-      adjustment: -5,
-      message: "최근 2회 모두 목표보다 쉬웠습니다. 다음 기준 페이스를 5초 빠르게 조정합니다."
-    };
-  }
-
-  if (first === "HIGH" && second === "HIGH") {
-    return {
-      adjustment: 5,
-      message: "최근 2회 모두 목표보다 과했습니다. 다음 기준 페이스를 5초 느리게 조정합니다."
-    };
-  }
-
-  return {
-    adjustment: 0,
-    message: "최근 2회 결과가 한 방향으로 벗어나지 않았습니다. 기준 페이스를 유지합니다."
-  };
-}
-
-// RPE 저장 및 결과 표시
-function submitRpe(actualRpe) {
   const program = workouts[selectedProgramKey];
   const targetMin = program.targetRpeMin || 8;
   const targetMax = program.targetRpeMax || 9;
 
-  const result = judgeRpe(actualRpe, targetMin, targetMax);
+  try {
+    finishResult.innerHTML = "기록 저장 중입니다...";
 
-  const record = {
-    date: new Date().toISOString(),
-    programKey: selectedProgramKey,
-    programName: program.buttonTitle,
-    targetRpeMin: targetMin,
-    targetRpeMax: targetMax,
-    actualRpe,
-    result
-  };
+    const url =
+      `${API_URL}?action=saveRpe` +
+      `&code=${encodeURIComponent(currentMemberCode)}` +
+      `&programKey=${encodeURIComponent(selectedProgramKey)}` +
+      `&programName=${encodeURIComponent(program.buttonTitle)}` +
+      `&targetRpeMin=${encodeURIComponent(targetMin)}` +
+      `&targetRpeMax=${encodeURIComponent(targetMax)}` +
+      `&actualRpe=${encodeURIComponent(actualRpe)}`;
 
-  currentMember.weeklyResults.push(record);
+    const response = await fetch(url);
+    const data = await response.json();
 
-  const weeklyAdjustment = calculateWeeklyAdjustment(currentMember.weeklyResults);
-  const beforePace = currentMember.basePaceSeconds;
+    if (!data.success) {
+      alert(data.message || "기록 저장에 실패했습니다.");
+      return;
+    }
 
-  if (weeklyAdjustment.adjustment !== 0) {
-    currentMember.basePaceSeconds += weeklyAdjustment.adjustment;
+    currentMember.basePaceSeconds = Number(data.basePaceAfter);
+    thresholdPaceSeconds = Number(data.basePaceAfter);
 
-    // 보정 후에는 새로운 기준으로 다시 2회 측정 시작
-    currentMember.weeklyResults = [];
+    finishResult.innerHTML = `
+      ${currentMember.name}님 훈련 완료<br /><br />
+      오늘 RPE: ${actualRpe}<br />
+      ${data.message}<br /><br />
+      이전 기준 페이스: ${formatPace(Number(data.basePaceBefore))}<br />
+      현재 기준 페이스: ${formatPace(Number(data.basePaceAfter))}
+    `;
+
+    showScreen(finishScreen);
+  } catch (error) {
+    console.error(error);
+    alert("Google Sheet 기록 저장에 실패했습니다. Apps Script 배포 상태를 확인해주세요.");
   }
-
-  const afterPace = currentMember.basePaceSeconds;
-
-  saveMemberData();
-
-  let resultText = "";
-
-  if (result === "LOW") {
-    resultText = "오늘 본세트는 조금 여유 있었습니다.";
-  } else if (result === "HIGH") {
-    resultText = "오늘 본세트는 강도가 높았습니다.";
-  } else {
-    resultText = "오늘 본세트는 적절한 강도였습니다.";
-  }
-
-  finishResult.innerHTML = `
-    ${currentMember.name}님 훈련 완료<br /><br />
-    오늘 RPE: ${actualRpe}<br />
-    판정: ${resultText}<br /><br />
-    ${weeklyAdjustment.message}<br /><br />
-    이전 기준 페이스: ${formatPace(beforePace)}<br />
-    현재 기준 페이스: ${formatPace(afterPace)}
-  `;
-
-  showScreen(finishScreen);
 }
 
 // 리셋
@@ -562,7 +492,7 @@ function resetWorkout() {
   countdownOverlay.classList.remove("show", "final-count", "go");
 
   if (currentMember) {
-    thresholdPaceSeconds = currentMember.basePaceSeconds;
+    thresholdPaceSeconds = Number(currentMember.basePaceSeconds);
     memberPaceDisplay.textContent = `현재 기준 페이스: ${formatPace(thresholdPaceSeconds)}`;
     memberSpeedDisplay.textContent = `트레드밀 속도: ${paceToSpeed(thresholdPaceSeconds)} km/h`;
   }
