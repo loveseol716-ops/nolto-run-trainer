@@ -2,7 +2,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwWdEm_u4DimzCdlRDPKRI-
 
 // 코치 전용 프로그램을 볼 코드
 // 실제 사용하는 설재현 / 윤관장 코드로 바꾸면 됨
-const COACH_CODES = ["SJ01", "DW01"];
+const COACH_CODES = ["JH01", "DW01"];
 
 let selectedWorkout = [];
 let selectedProgramKey = null;
