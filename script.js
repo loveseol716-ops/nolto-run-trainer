@@ -1,5 +1,9 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwWdEm_u4DimzCdlRDPKRI-9b70dADd54EU9OOFvpnHyW5oVhjyKCo0WuCtSSy7ridFoA/exec";
 
+// 코치 전용 프로그램을 볼 코드
+// 실제 사용하는 설재현 / 윤관장 코드로 바꾸면 됨
+const COACH_CODES = ["SJ01", "DW01"];
+
 let selectedWorkout = [];
 let selectedProgramKey = null;
 let currentMemberCode = null;
@@ -62,6 +66,27 @@ const countdownNext = document.getElementById("countdown-next");
 // RPE 요소
 const rpeButtons = document.querySelectorAll(".rpe-btn");
 const finishResult = document.getElementById("finish-result");
+
+// 현재 사용할 프로그램 세트 선택
+function selectWorkoutSet(member) {
+  const code = String(member.code || "").trim().toUpperCase();
+  const role = String(member.role || "").trim().toLowerCase();
+
+  const isCoach =
+    role === "coach" ||
+    COACH_CODES.map((item) => item.toUpperCase()).includes(code);
+
+  if (isCoach && typeof coachWorkouts !== "undefined") {
+    workouts = coachWorkouts;
+    return "coach";
+  }
+
+  if (typeof memberWorkouts !== "undefined") {
+    workouts = memberWorkouts;
+  }
+
+  return "member";
+}
 
 // 화면 전환
 function showScreen(screen) {
@@ -192,9 +217,15 @@ async function loginMember() {
     currentMember = data.member;
     thresholdPaceSeconds = Number(currentMember.basePaceSeconds);
 
+    const workoutType = selectWorkoutSet(currentMember);
+
     memberNameDisplay.textContent = `${currentMember.name}님`;
     memberPaceDisplay.textContent = `현재 기준 페이스: ${formatPace(thresholdPaceSeconds)}`;
     memberSpeedDisplay.textContent = `트레드밀 속도: ${paceToSpeed(thresholdPaceSeconds)} km/h`;
+
+    if (workoutType === "coach") {
+      memberNameDisplay.textContent = `${currentMember.name}님 / COACH MODE`;
+    }
 
     memberInfoBox.classList.remove("hidden");
     programList.classList.remove("hidden");
@@ -358,7 +389,7 @@ function updateScreen() {
   }
 
   if (current.distanceMeters) {
-    targetDisplay.textContent = `목표: ${current.distanceMeters}m at Threshold`;
+    targetDisplay.textContent = `목표: ${current.distanceMeters}m`;
   }
 
   updateProgressBar();
