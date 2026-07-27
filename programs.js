@@ -1,22 +1,22 @@
 const memberWorkouts = {
   week1: {
-    title: "SESSION A: 800m 10K Pace Repeats",
+    title: "SESSION A: 400m 10K Speed Repeats",
     buttonTitle: "SESSION A",
-    buttonSubtitle: "800m × 6",
-    targetRpeMin: 7,
-    targetRpeMax: 8,
+    buttonSubtitle: "400m × 10",
+    targetRpeMin: 8,
+    targetRpeMax: 9,
     description:
-      "10km 페이스로 800m 반복을 수행하며 페이스 유지력과 반복 능력을 만드는 훈련입니다.",
+      "10km 페이스보다 빠른 속도로 400m 반복을 수행하며 속도 적응과 회복 능력을 만드는 훈련입니다.",
     steps: [
       {
         section: "BRIEFING",
         phase: "오늘의 훈련 안내",
         time: 60,
-        target: "800m × 6 Sets",
-        paceOffset: 20,
-        round: "목표 RPE 7-8",
+        target: "400m × 10 Sets",
+        paceOffset: 8,
+        round: "목표 RPE 8-9",
         message:
-          "오늘은 800m 반복 훈련입니다. 10km 페이스 기준으로 6세트를 진행합니다. 초반부터 과하게 밀지 말고 모든 세트를 안정적으로 유지하는 것이 목표입니다.",
+          "오늘은 400m 반복 훈련입니다. 10km 페이스보다 10-15초 빠른 속도로 진행합니다. 세트 사이 60초는 걷지 않고 Easy Jog로 회복합니다.",
       },
       {
         section: "WARM UP",
@@ -54,32 +54,32 @@ const memberWorkouts = {
         section: "MAIN BRIEFING",
         phase: "본훈련 안내",
         time: 60,
-        target: "6 Sets For Meters",
-        paceOffset: 20,
-        round: "800m + 60초 Easy Jog × 6 Sets",
+        target: "10 Sets For Meters",
+        paceOffset: 8,
+        round: "400m + 60초 Easy Jog × 10 Sets",
         message:
-          "이제 본세트입니다. 800m를 10km 페이스로 6세트 진행합니다. 각 세트 후 60초 Easy Jog로 회복합니다.",
+          "이제 본세트입니다. 400m를 10km 페이스보다 빠르게 10세트 진행합니다. 회복 구간은 걷지 않고 Easy Jog로 이어갑니다.",
       },
-      ...Array.from({ length: 6 }).flatMap((_, i) => [
+      ...Array.from({ length: 10 }).flatMap((_, i) => [
         {
           section: "MAIN SET",
-          phase: `800m 10K Pace ${i + 1}/6`,
-          distanceMeters: 800,
-          target: "800m at 10K Pace",
-          paceOffset: 20,
-          round: `Set ${i + 1}/6`,
+          phase: `400m Fast 10K Pace ${i + 1}/10`,
+          distanceMeters: 400,
+          target: "400m at 10K Pace -10~15s",
+          paceOffset: 8,
+          round: `Set ${i + 1}/10`,
           message:
-            "800m 구간입니다. 10km 페이스로 안정적으로 유지하세요. 목표 RPE는 7-8입니다.",
+            "400m 구간입니다. 10km 페이스보다 빠르게 진행합니다. 목표 RPE는 8-8.5 정도입니다.",
         },
         {
           section: "MAIN SET",
-          phase: `Easy Jog Recovery ${i + 1}/6`,
+          phase: `Easy Jog Recovery ${i + 1}/10`,
           time: 60,
           target: "60 Seconds Easy Jog Recovery",
           paceOffset: 120,
-          round: `Recovery ${i + 1}/6`,
+          round: `Recovery ${i + 1}/10`,
           message:
-            "60초 Easy Jog Recovery입니다. 완전히 멈추지 말고 가볍게 호흡을 정리하세요.",
+            "60초 Easy Jog Recovery입니다. 걷지 말고 가볍게 조깅으로 회복하세요.",
         },
       ]),
       {
@@ -96,33 +96,33 @@ const memberWorkouts = {
   },
 
   week2: {
-    title: "SESSION B: 8 Min 10K Pace Volume",
+    title: "SESSION B: 20 Min 10K Tempo",
     buttonTitle: "SESSION B",
-    buttonSubtitle: "8 Min × 3",
+    buttonSubtitle: "20 Min Tempo",
     targetRpeMin: 7,
-    targetRpeMax: 7,
+    targetRpeMax: 8,
     description:
-      "10km 페이스보다 여유 있는 속도로 8분 반복을 수행하며 유산소 볼륨을 쌓는 훈련입니다.",
+      "10km 페이스보다 여유 있는 속도로 20분 지속주를 수행하며 페이스 유지력을 만드는 훈련입니다.",
     steps: [
       {
         section: "BRIEFING",
         phase: "오늘의 훈련 안내",
         time: 60,
-        target: "8분 반복 유산소 볼륨",
-        paceOffset: 40,
-        round: "8분 × 3 Sets",
+        target: "20 Min Continuous Run",
+        paceOffset: 35,
+        round: "목표 RPE 7-8",
         message:
-          "오늘은 8분 반복 훈련입니다. 10km 페이스보다 여유 있는 속도로 진행합니다. 목표 RPE는 7입니다.",
+          "오늘은 20분 지속주입니다. 10km 페이스보다 10-15초 느린 속도로 진행합니다. 무리하게 빠르게 시작하지 말고 끝까지 일정하게 유지하세요.",
       },
       {
         section: "WARM UP",
         phase: "Easy Jog",
-        time: 600,
+        time: 240,
         target: "몸의 온도 올리기",
         paceOffset: 105,
-        round: "10 Minute Easy Jog",
+        round: "4 Minute Easy Jog",
         message:
-          "10분 Easy Jog입니다. 몸을 천천히 올리고 호흡을 안정적으로 만들어주세요.",
+          "4분 Easy Jog입니다. 호흡을 편하게 만들고 몸을 천천히 준비하세요.",
       },
       ...Array.from({ length: 4 }).flatMap((_, i) => [
         {
@@ -150,43 +150,31 @@ const memberWorkouts = {
         section: "MAIN BRIEFING",
         phase: "본훈련 안내",
         time: 60,
-        target: "3 Sets For Time",
-        paceOffset: 40,
-        round: "8분 + 90초 Easy Jog × 3 Sets",
+        target: "20 Min For Meters",
+        paceOffset: 35,
+        round: "20분 지속주",
         message:
-          "이제 본세트입니다. 8분 동안 개인 기준 페이스보다 40초 느린 페이스로 달리고, 세트 사이에는 90초 Easy Jog로 회복합니다.",
+          "이제 본세트입니다. 20분 동안 개인 기준 페이스보다 35초 느린 페이스로 달립니다. 목표 RPE는 7-8입니다.",
       },
-      ...Array.from({ length: 3 }).flatMap((_, i) => [
-        {
-          section: "MAIN SET",
-          phase: `8 Min 10K Pace ${i + 1}/3`,
-          time: 480,
-          target: "8 Min at 10K Pace +15-20s",
-          paceOffset: 40,
-          round: `Set ${i + 1}/3`,
-          message:
-            "8분 구간입니다. 10km 페이스보다 여유 있게, RPE 7 정도로 안정적으로 유지하세요.",
-        },
-        {
-          section: "MAIN SET",
-          phase: `Easy Jog Recovery ${i + 1}/3`,
-          time: 90,
-          target: "90 Seconds Easy Jog Recovery",
-          paceOffset: 120,
-          round: `Recovery ${i + 1}/3`,
-          message:
-            "90초 Easy Jog Recovery입니다. 완전히 멈추지 말고 가볍게 호흡을 정리하세요.",
-        },
-      ]),
+      {
+        section: "MAIN SET",
+        phase: "20 Min 10K Tempo",
+        time: 1200,
+        target: "20 Min at 10K Pace +10~15s",
+        paceOffset: 35,
+        round: "20 Minute Run",
+        message:
+          "20분 지속주입니다. 호흡과 페이스를 일정하게 유지하세요. 후반에도 무너지지 않는 것이 목표입니다.",
+      },
       {
         section: "COOL DOWN",
         phase: "Easy Jog",
-        time: 600,
+        time: 300,
         target: "호흡과 심박 안정",
         paceOffset: 105,
-        round: "10 Minute Easy Jog",
+        round: "5 Minute Easy Jog",
         message:
-          "10분 쿨다운입니다. 속도를 충분히 낮추고 오늘 훈련을 마무리합니다.",
+          "5분 쿨다운입니다. 속도를 충분히 낮추고 오늘 훈련을 마무리합니다.",
       },
     ],
   },
